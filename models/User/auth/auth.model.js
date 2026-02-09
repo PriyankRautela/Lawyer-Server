@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
+      required:true
     },
     email: {
       type: String,
@@ -14,6 +15,7 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
+      required:true,
       select: false
     },
     dob: { type: Date },
@@ -34,11 +36,6 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Users",
-      select: false
-    },
     contact: {
       type: Number,
       required:true,
@@ -49,6 +46,11 @@ const userSchema = new mongoose.Schema(
     },
     refreshToken:{
       type:String,
+      select: false
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Users",
       select: false
     },
     updatedBy: {

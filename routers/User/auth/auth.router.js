@@ -3,7 +3,6 @@ import {
  userRegister,
   verifyOtp,
   userLogin,
-  addPassword,
   logoutUser,
   refreshAccessToken,
   forgotPassword,
@@ -20,9 +19,6 @@ authRouter.post("/register",  userRegister);
 
 // Otp verfication
 authRouter.post("/verify-otp", verifyOtp);
-
-//addPassword
-authRouter.post("/add-pass", addPassword);
 
 // User Login
 authRouter.post("/login", userLogin);

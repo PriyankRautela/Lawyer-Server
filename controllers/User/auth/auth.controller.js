@@ -14,7 +14,7 @@ import otpModel from '../../../models/Comman/Otp/otp.model.js';
 //USER REGISTRATION
 const userRegister = async (req, res, next) => {
   try {
-    const { email } = req?.body || {};
+    const { email  } = req?.body || {};
 
     const normalizedEmail = email?.trim().toLowerCase();
 
@@ -54,115 +54,86 @@ const userRegister = async (req, res, next) => {
 
 const verifyOtp = async (req, res, next) => {
   try {
-    let { email, otp } = req?.body || {};
+    let { email, otp, password, fullName, contact } = req.body || {};
 
     email = email?.trim().toLowerCase();
     otp = otp?.toString();
 
-    // Find the user
+    if (password.length < 8) {
+      throw new ValidationError("Password must be at least 8 characters");
+    }
+
     const pendingUser = await pendingUserModel.findOne({
-      email: email,
+      email,
       isUsed: false,
     });
 
     if (!pendingUser) {
-      throw new BadRequestError("Invalid or expired OTP")
+      throw new BadRequestError("Invalid or expired OTP");
     }
-    const OTP = pendingUser?.otp;
-    const isMatch = await bcrypt.compare(otp, OTP);
+
+    const isMatch = await bcrypt.compare(otp, pendingUser.otp);
     if (!isMatch) {
-      throw new BadRequestError("Invalid OTP")
+      throw new BadRequestError("Invalid OTP");
     }
 
-    if (pendingUser?.isVerified) {
-     throw new ConflictError("User already verified")
+    if (pendingUser.isVerified) {
+      throw new ConflictError("User already verified");
     }
 
-    // Mark OTP as used
     pendingUser.isUsed = true;
     pendingUser.isVerified = true;
     await pendingUser.save();
 
-    const userData = new userModel({
-      email,
-      isVerified: true,
-    });
-    const user = await userData.save();
-
-    //sending email
-    const emailP = new Email(user);
-    emailP.sendWelcome();
-
-    return res.status(200).json({
-      success: true,
-      user,
-      message: "Email verified successfully",
-    });
-  } catch (error) {
-    next(error)
-  }
-};
-
-const addPassword = async (req, res, next) => {
-  try {
-    let { userId, password} = req?.body || {};
-    if (!userId || !password) {
-     if (!userId || !password) {
-       throw new ValidationError("Provide the credentials")
-    }
-    }
-
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    let user = await userModel.findByIdAndUpdate(
-      userId,
-      {
-        password: hashedPassword,
-        referredBy,
-      },
-      { new: true }
-    );
+    const user = await userModel.create({
+      email,
+      name: fullName.trim(),
+      password: hashedPassword,
+      contact,
+      isVerified: true,
+    });
 
-    const refreshToken = createRefreshToken(user?._id);
+    const refreshToken = createRefreshToken(user._id);
+    user.refreshToken = refreshToken;
+    await user.save();
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false,
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    user.refreshToken = refreshToken;
-    user.save();
-    user = user.toObject();
 
-    delete user?.password;
-    delete user?.__v;
-    delete user?.updatedAt;
-    delete user?.createdAt;
-    delete user?.createdBy;
-    delete user?.updatedBy;
+    const safeUser = user.toObject();
+    delete safeUser.password;
+    delete safeUser.__v;
+    delete safeUser.updatedAt;
+    delete safeUser.createdAt;
 
-    const accessToken = createAccessToken(user);
+    const accessToken = createAccessToken(safeUser);
+
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: false,
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000,
     });
-    delete user?._id;
-    if (!user) {
-      throw new NotFoundError("User not found")
-    }
+
+    const emailP = new Email(user);
+    emailP.sendWelcome();
+
+    delete safeUser._id;
+
     return res.status(200).json({
       success: true,
-      user,
       message: "Registration is complete",
+      user: safeUser,
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
+
 
 //  USER LOGIN
 const userLogin = async (req, res, next) => {
@@ -485,7 +456,6 @@ export {
   userRegister,
   verifyOtp,
   userLogin,
-  addPassword,
   logoutUser,
   refreshAccessToken,
   forgotPassword,

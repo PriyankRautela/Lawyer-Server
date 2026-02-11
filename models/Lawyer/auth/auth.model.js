@@ -7,7 +7,6 @@ const lawyerSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-
     email: {
       type: String,
       required: true,
@@ -41,6 +40,10 @@ const lawyerSchema = new mongoose.Schema(
     fee: {
       type: Number,
       min: 0,
+    },
+    
+    state:{
+      type:String
     },
 
     contactNumber: {

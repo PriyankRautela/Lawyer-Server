@@ -113,32 +113,6 @@ export const getMyKycList = async (req, res, next) => {
     next(error);
   }
 };
-export const getAllKyc = async (req, res, next) => {
-  try {
-    const { status, documentType, certificateType, lawyerId } = req?.query;
-
-    const filter = {};
-
-    if (status) filter.status = status;
-    if (documentType) filter.documentType = documentType;
-    if (certificateType) filter.certificateType = certificateType;
-    if (lawyerId) filter.lawyerId = lawyerId;
-
-    const kycs = await lawyerKycModel
-      .find(filter)
-      .populate("lawyerId", "name email contactNumber")
-      .populate("reviewedBy", "name email")
-      .sort({ createdAt: -1 });
-
-    res.status(200).json({
-      success: true,
-      count: kycs.length,
-      kycs,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 
 export const deleteKyc = async (req, res, next) => {
   try {

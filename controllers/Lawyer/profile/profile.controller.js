@@ -7,9 +7,6 @@ import {
   ConflictError,
 } from "../../../util/errorHandler/customError.js";
 
-/* =====================================
-   GET LAWYER PROFILE (SELF)
-===================================== */
 const getMyLawyerProfile = async (req, res, next) => {
   try {
     const lawyerId = req?.user?.id || req?.user?._id;
@@ -20,7 +17,7 @@ const getMyLawyerProfile = async (req, res, next) => {
 
     const lawyer = await lawyerModel
       .findById(lawyerId)
-      .select("-__v -createdBy -updateBy");
+      .select("-__v -password -createdBy -updateBy");
 
     if (!lawyer) {
       throw new NotFoundError("Lawyer profile not found");
@@ -34,10 +31,6 @@ const getMyLawyerProfile = async (req, res, next) => {
     next(error);
   }
 };
-
-/* =====================================
-   UPDATE LAWYER PROFILE (SELF)
-===================================== */
 const updateMyLawyerProfile = async (req, res, next) => {
   try {
     const lawyerId = req?.user?.id || req?.user?._id;
@@ -48,32 +41,28 @@ const updateMyLawyerProfile = async (req, res, next) => {
 
     const {
       name,
-      image,
       barCouncilId,
       yearOfExperince,
       fee,
       contactNumber,
-      certificate,
-      govId,
+      state
     } = req.body || {};
 
-    // Nothing to update
+    const image = req.file
+      ? `${req.protocol}://${req.get("host")}/${req.file.path}`
+      : undefined;
+
     if (
       !name &&
-      !image &&
       !barCouncilId &&
       !yearOfExperince &&
       fee === undefined &&
       !contactNumber &&
-      !certificate &&
-      !govId
+      !image
     ) {
       throw new ValidationError("No valid fields provided for update");
     }
 
-    /* -------------------------------
-       Bar Council ID uniqueness
-    -------------------------------- */
     if (barCouncilId) {
       const exists = await lawyerModel.findOne({
         barCouncilId,
@@ -85,25 +74,23 @@ const updateMyLawyerProfile = async (req, res, next) => {
       }
     }
 
-    /* -------------------------------
-       Contact number validation
-    -------------------------------- */
     if (contactNumber && String(contactNumber).length < 8) {
       throw new ValidationError("Invalid contact number");
     }
 
-    /* -------------------------------
-       Build safe update object
-    -------------------------------- */
+    if (fee !== undefined && fee < 0) {
+      throw new ValidationError("Fee cannot be negative");
+    }
+
+
     const updatePayload = {
       ...(name && { name: name.trim() }),
-      ...(image && { image }),
       ...(barCouncilId && { barCouncilId: barCouncilId.trim() }),
       ...(yearOfExperince && { yearOfExperince }),
       ...(fee !== undefined && { fee }),
+      ...(state !==undefined&&{state}),
       ...(contactNumber && { contactNumber }),
-      ...(certificate && { certificate }),
-      ...(govId && { govId }),
+      ...(image && { image }),
       updateBy: lawyerId,
     };
 
@@ -114,21 +101,16 @@ const updateMyLawyerProfile = async (req, res, next) => {
         new: true,
         runValidators: true,
       }
-    );
+    ).select("-__v -password -createdBy -updateBy");
 
     if (!updatedLawyer) {
       throw new NotFoundError("Lawyer profile not found");
     }
 
-    const lawyer = updatedLawyer.toObject();
-    delete lawyer.__v;
-    delete lawyer.createdBy;
-    delete lawyer.updateBy;
-
     res.status(200).json({
       success: true,
       message: "Profile updated successfully",
-      lawyer,
+      lawyer: updatedLawyer,
     });
   } catch (error) {
     next(error);

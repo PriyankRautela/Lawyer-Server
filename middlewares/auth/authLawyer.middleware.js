@@ -5,7 +5,7 @@ import {
 } from "../../util/errorHandler/customError.js";
 import lawyerModel from "../../models/Lawyer/auth/auth.model.js";
 
-const authAdmin = async (req, res, next) => {
+const authLawyer = async (req, res, next) => {
   try {
     const authHeader =
       req.headers["authorization"] || req.cookies?.accessToken;
@@ -34,7 +34,7 @@ const authAdmin = async (req, res, next) => {
     }
 
     // Fetch admin
-    const lawyer = await lawyerModel.findById(adminId);
+    const lawyer = await lawyerModel.findById(lawyerId);
     if (!lawyer) {
       throw new UnauthorizedError("Admin not found");
     }
@@ -61,4 +61,4 @@ const authAdmin = async (req, res, next) => {
   }
 };
 
-export default authAdmin;
+export default authLawyer;

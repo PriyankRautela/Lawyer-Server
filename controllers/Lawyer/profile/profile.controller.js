@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import lawyerModel from "../../../models/Lawyer/lawyer.model.js";
+import lawyerModel from "../../../models/Lawyer/auth/auth.model.js";
 import {
   NotFoundError,
   ValidationError,

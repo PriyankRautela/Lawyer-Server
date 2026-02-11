@@ -1,4 +1,4 @@
-import lawyerModel from "../../../models/Lawyer/lawyer.model.js";
+import lawyerModel from "../../../models/Lawyer/auth/auth.model.js";
 import { ValidationError } from "../../../util/errorHandler/customError.js";
 
 const getVerifiedLawyers = async (req, res, next) => {

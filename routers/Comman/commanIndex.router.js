@@ -1,5 +1,5 @@
 import express from "express";
-import lawyerRouter from "./getLawyer/getLawyer.router";
+import lawyerRouter from "./getLawyer/getLawyer.router.js";
 
 const commanIndexRouter = express.Router();
 

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import fs from "fs";
 import path from "path";
-import userModel from "../../../models/User/user.model.js";
+import userModel from "../../../models/User/auth/auth.model.js";
 import {
   ValidationError,
   NotFoundError,

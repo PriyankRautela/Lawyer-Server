@@ -1,3 +1,8 @@
+import mongoose  from "mongoose";
+import { BadRequestError, NotFoundError, UnauthorizedError } from "../../../util/errorHandler/customError.js";
+import lawyerKycModel from "../../../models/Lawyer/auth/lawyerKyc.model.js";
+
+
 export const addLawyerKyc = async (req, res, next) => {
   try {
     const lawyerId = req.user?.id || req.user?._id;

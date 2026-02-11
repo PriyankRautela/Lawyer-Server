@@ -1,5 +1,5 @@
 import express from "express";
-import { getVerifiedLawyers } from "../../../controllers/Comman/Lawyer/getVerifiedLawyer";
+import { getVerifiedLawyers } from "../../../controllers/Comman/Lawyer/getVerifiedLawyer.js";
 
 const lawyerRouter = express.Router();
 

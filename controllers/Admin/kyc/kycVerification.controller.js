@@ -39,8 +39,8 @@ const reviewLawyerKyc = async (req, res, next) => {
   const session = await mongoose.startSession();
 
   try {
-    const { kycId } = req.params;
-    const { action, rejectionReason } = req.body;
+    const { kycId } = req?.params||{};
+    const { action, rejectionReason } = req?.body||{};
     const adminId = req?.user?.id || req?.user?._id;
 
     if (!mongoose.Types.ObjectId.isValid(kycId)) {
@@ -84,7 +84,8 @@ const reviewLawyerKyc = async (req, res, next) => {
           {
             $set: {
               kycVerified: true,
-              isVerified: true,
+              barCouncilId:kyc.barCouncilId,
+              experince:kyc.experince
             },
           },
           { session }
@@ -96,7 +97,7 @@ const reviewLawyerKyc = async (req, res, next) => {
           kyc.lawyerId,
           {
             $set: {
-              kycVerified: false,
+              kycVerified: false
             },
           },
           { session }

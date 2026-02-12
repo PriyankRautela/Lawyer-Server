@@ -11,7 +11,7 @@ export const addLawyerKyc = async (req, res, next) => {
       throw new UnauthorizedError("Invalid lawyer authentication");
     }
 
-    const { documentType, certificateType } = req.body || {};
+    const { documentType, certificateType, experince, field } = req.body || {};
 
     if (!documentType || !certificateType) {
       throw new BadRequestError(
@@ -54,6 +54,8 @@ export const addLawyerKyc = async (req, res, next) => {
       certificateType,
       documentFileKey,
       certificateFileKey,
+      experince,
+      field
     });
 
     res.status(201).json({

@@ -25,23 +25,38 @@ const lawyerKycSchema = new mongoose.Schema(
       ],
       required: true,
     },
-
-    fileKey: {
+    documentFileKey: {
       type: String,
       required: true,
     },
-
+    
+    certificateFileKey: {
+      type: String,
+      required: true,
+    },
+    experince:{
+      type:String,
+      required:true
+    },
+    field:{
+      type:[String],
+      required:true
+    },
     status: {
       type: String,
       enum: ["PENDING", "APPROVED", "REJECTED"],
       default: "PENDING",
     },
-
+    barCouncilId: {
+      type: String,
+      trim: true,
+      unique: true,
+      sparse: true,
+    },
     reviewedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Admin",
     },
-
     reviewedAt: Date,
     rejectionReason: String,
   },

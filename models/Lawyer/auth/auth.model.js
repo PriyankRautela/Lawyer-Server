@@ -42,8 +42,7 @@ const lawyerSchema = new mongoose.Schema(
       trim: true,
     },
     avilable:{
-      type:Boolean,
-      default:true
+      type:Boolean
     },
     isVerified: {
       type: Boolean,

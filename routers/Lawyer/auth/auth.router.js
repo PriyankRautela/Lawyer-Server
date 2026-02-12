@@ -2,7 +2,6 @@ import express from "express";
 import {
   lawyerRegister,
   verifyLawyerOtp,
-  addLawyerPassword,
   lawyerLogin,
   forgotLawyerPassword,
   resetLawyerPassword,
@@ -17,7 +16,6 @@ const lawyerauthRouter = express.Router();
 
 lawyerauthRouter.post("/register", lawyerRegister);
 lawyerauthRouter.post("/verify-otp", verifyLawyerOtp);
-lawyerauthRouter.post("/add-password", addLawyerPassword);
 
 lawyerauthRouter.post("/login", lawyerLogin);
 lawyerauthRouter.post("/logout", authMiddleware, logoutLawyer);

@@ -50,7 +50,7 @@ const lawyerRegister = async (req, res, next) => {
 
 const verifyLawyerOtp = async (req, res, next) => {
   try {
-    let { email, otp } = req.body || {};
+    let { email, otp, password, contact,name } = req.body || {};
     email = email?.trim().toLowerCase();
 
     const pendingLawyer = await pendingUserModel.findOne({
@@ -69,42 +69,15 @@ const verifyLawyerOtp = async (req, res, next) => {
     pendingLawyer.isVerified = true;
     await pendingLawyer.save();
 
+     const hashedPassword = await bcrypt.hash(password, 10);
+
     const lawyer = await lawyerModel.create({
       email,
       isVerified: true,
+      password:hashedPassword,
+      contact,
+      name
     });
-
-    const emailService = new Email(lawyer);
-    emailService.sendWelcome();
-
-    res.status(200).json({
-      success: true,
-      message: "OTP verified successfully",
-      lawyerId: lawyer._id,
-    });
-  } catch (err) {
-    next(err);
-  }
-};
-
-const addLawyerPassword = async (req, res, next) => {
-  try {
-    const { lawyerId, password } = req.body || {};
-
-    if (!lawyerId || !password) {
-      throw new ValidationError("Provide lawyerId and password");
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    let lawyer = await lawyerModel.findByIdAndUpdate(
-      lawyerId,
-      { password: hashedPassword },
-      { new: true },
-    );
-
-    if (!lawyer) throw new NotFoundError("Lawyer not found");
-
     const refreshToken = createRefreshToken(lawyer._id);
     lawyer.refreshToken = refreshToken;
     await lawyer.save();
@@ -115,8 +88,8 @@ const addLawyerPassword = async (req, res, next) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     lawyer = lawyer.toObject();
-    delete lawyer._id;
-    delete lawyer.password;
+    delete lawyer?.password;
+    delete lawyer?.image
 
     const accessToken = createAccessToken(lawyer);
     res.cookie("accessToken", accessToken, {
@@ -124,10 +97,13 @@ const addLawyerPassword = async (req, res, next) => {
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000,
     });
-
     delete lawyer._id;
+   
 
-    res.status(200).json({
+    const emailService = new Email(lawyer);
+    emailService.sendWelcome();
+
+     res.status(200).json({
       success: true,
       message: "Lawyer registration completed",
       lawyer,
@@ -136,6 +112,7 @@ const addLawyerPassword = async (req, res, next) => {
     next(err);
   }
 };
+
 
 const lawyerLogin = async (req, res, next) => {
   try {
@@ -226,9 +203,6 @@ const resetLawyerPassword = async (req, res, next) => {
   }
 };
 
-/* =====================================
-   LOGOUT
-===================================== */
 const logoutLawyer = async (req, res) => {
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
@@ -239,9 +213,6 @@ const logoutLawyer = async (req, res) => {
   });
 };
 
-/* =====================================
-   DELETE ACCOUNT
-===================================== */
 const deleteLawyerAccount = async (req, res, next) => {
   try {
     const lawyerId = req.user?.id;
@@ -261,7 +232,6 @@ const deleteLawyerAccount = async (req, res, next) => {
 export {
   lawyerRegister,
   verifyLawyerOtp,
-  addLawyerPassword,
   lawyerLogin,
   forgotLawyerPassword,
   resetLawyerPassword,

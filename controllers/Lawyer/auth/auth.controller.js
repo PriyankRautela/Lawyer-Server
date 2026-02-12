@@ -113,7 +113,6 @@ const verifyLawyerOtp = async (req, res, next) => {
   }
 };
 
-
 const lawyerLogin = async (req, res, next) => {
   try {
     let { email, password } = req.body || {};

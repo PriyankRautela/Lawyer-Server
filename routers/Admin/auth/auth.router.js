@@ -2,7 +2,6 @@ import express from "express";
 import {
   adminRegister,
   verifyAdminOtp,
-  addAdminPassword,
   adminLogin,
   logoutAdmin,
   forgotAdminPassword,
@@ -17,7 +16,6 @@ const adminAuthRouter = express.Router();
 
 adminAuthRouter.post("/register", adminRegister);
 adminAuthRouter.post("/verify-otp", verifyAdminOtp);
-adminAuthRouter.post("/add-password", addAdminPassword);
 
 adminAuthRouter.post("/login", adminLogin);
 adminAuthRouter.post("/logout", authMiddleware, logoutAdmin);

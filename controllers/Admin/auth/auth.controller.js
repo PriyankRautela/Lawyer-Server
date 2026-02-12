@@ -51,7 +51,7 @@ const adminRegister = async (req, res, next) => {
 
 const verifyAdminOtp = async (req, res, next) => {
   try {
-    let { email, otp } = req?.body || {};
+    let { email, otp, password, name } = req?.body || {};
     email = email?.trim().toLowerCase();
 
     const pendingAdmin = await pendingUserModel.findOne({
@@ -69,42 +69,14 @@ const verifyAdminOtp = async (req, res, next) => {
     pendingAdmin.isUsed = true;
     pendingAdmin.isVerified = true;
     await pendingAdmin.save();
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const admin = await adminModel.create({
       email,
       isVerified: true,
+      password:hashedPassword,
+      name
     });
-
-    const emailService = new Email(admin);
-    emailService.sendWelcome();
-
-    res.status(200).json({
-      success: true,
-      message: "Admin verified successfully",
-      adminId: admin._id,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const addAdminPassword = async (req, res, next) => {
-  try {
-    const { adminId, password } = req.body || {};
-
-    if (!adminId || !password) {
-      throw new ValidationError("Admin ID and password required");
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    let admin = await adminModel.findByIdAndUpdate(
-      adminId,
-      { password: hashedPassword },
-      { new: true }
-    );
-
-    if (!admin) throw new NotFoundError("Admin not found");
 
     const refreshToken = createRefreshToken(admin._id);
     admin.refreshToken = refreshToken;
@@ -117,7 +89,7 @@ const addAdminPassword = async (req, res, next) => {
     });
 
     admin = admin.toObject();
-    delete admin.password;
+    delete admin?.password;
 
     const accessToken = createAccessToken(admin);
     res.cookie("accessToken", accessToken, {
@@ -126,7 +98,10 @@ const addAdminPassword = async (req, res, next) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    delete admin._id;
+    delete admin?._id;
+
+    const emailService = new Email(admin);
+    emailService.sendWelcome();
 
     res.status(200).json({
       success: true,
@@ -137,6 +112,7 @@ const addAdminPassword = async (req, res, next) => {
     next(error);
   }
 };
+
 
 const adminLogin = async (req, res, next) => {
   try {
@@ -301,7 +277,6 @@ const deleteAdminAccount = async (req, res, next) => {
 export {
   adminRegister,
   verifyAdminOtp,
-  addAdminPassword,
   adminLogin,
   logoutAdmin,
   forgotAdminPassword,

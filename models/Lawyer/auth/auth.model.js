@@ -33,10 +33,6 @@ const lawyerSchema = new mongoose.Schema(
     yearOfExperince: {
       type: String,
     },
-    fee: {
-      type: Number,
-      min: 0,
-    }, 
     state:{
       type:String
     },
@@ -44,6 +40,10 @@ const lawyerSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+    },
+    avilable:{
+      type:Boolean,
+      default:true
     },
     isVerified: {
       type: Boolean,

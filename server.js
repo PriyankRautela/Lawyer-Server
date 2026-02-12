@@ -12,7 +12,7 @@ configureExpress(app);
 app.get("/", (req, res) => {
   res.send("API WORKING");
 });
-app.use('/app/v1',router)
+app.use('/api/v1',router)
 app.use(errorHandler);
 
 app.listen(PORT, () =>

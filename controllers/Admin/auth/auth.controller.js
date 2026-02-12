@@ -71,7 +71,7 @@ const verifyAdminOtp = async (req, res, next) => {
     await pendingAdmin.save();
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const admin = await adminModel.create({
+    let admin = await adminModel.create({
       email,
       isVerified: true,
       password:hashedPassword,

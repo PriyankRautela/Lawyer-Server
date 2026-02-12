@@ -34,6 +34,7 @@ const lawyerRegister = async (req, res, next) => {
       email,
       otp: hashedOtp,
     });
+    await pendingLawyer.save()
 
     const emailService = new Email(pendingLawyer);
     await emailService.sendOtp(otp);
@@ -53,7 +54,7 @@ const verifyLawyerOtp = async (req, res, next) => {
     let { email, otp, password, contact,name } = req.body || {};
     email = email?.trim().toLowerCase();
 
-    const pendingLawyer = await pendingUserModel.findOne({
+    let pendingLawyer = await pendingUserModel.findOne({
       email,
       isUsed: false,
     });
@@ -71,11 +72,11 @@ const verifyLawyerOtp = async (req, res, next) => {
 
      const hashedPassword = await bcrypt.hash(password, 10);
 
-    const lawyer = await lawyerModel.create({
+    let lawyer = await lawyerModel.create({
       email,
       isVerified: true,
       password:hashedPassword,
-      contact,
+      contactNumber:contact,
       name
     });
     const refreshToken = createRefreshToken(lawyer._id);

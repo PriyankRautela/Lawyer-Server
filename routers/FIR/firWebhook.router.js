@@ -1,5 +1,5 @@
 import express from "express";
-import { stripeWebhook } from "../../controllers/FIR/firWebhook.controller";
+import { stripeWebhook } from "../../controllers/FIR/firWebhook.controller.js";
 
 const webRouter = express.Router();
 

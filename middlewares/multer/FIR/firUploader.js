@@ -1,6 +1,6 @@
 import { createUploader } from "../multer.js";
 
-export const firUploader = createUploader({
+ const firUploader = createUploader({
   folder: "fir",
   allowedMimeTypes: [
     "application/pdf",
@@ -9,3 +9,5 @@ export const firUploader = createUploader({
   ],
   maxSizeMB: 10,
 });
+
+export default firUploader;

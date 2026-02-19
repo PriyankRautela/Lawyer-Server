@@ -1,4 +1,4 @@
-import firDraftModel from "../../models/FIR/firDraftSchema.model";
+import firDraftModel from "../../models/FIR/firDraftSchema.model.js";
 
 export const createFirDraft = async (req, res, next) => {
   try {

@@ -183,6 +183,38 @@ const forgotLawyerPassword = async (req, res, next) => {
   }
 };
 
+const verifyForgotOtp = async (req, res, next) => {
+  try {
+    const { email, otp } = req?.body || {};
+
+    const user = await lawyerModel.findOne({ email });
+
+    if (!user) {
+      throw new BadRequestError("Invalid email")
+    }
+
+    const otpRecord = await otpModel.findOne({
+      $or: [{ userId: user?._id }],
+      isUsed: false,
+    });
+    if (!otpRecord) {
+      throw new BadRequestError("OTP expired")
+    }
+
+    const isMatch = await bcrypt.compare(otp, otpRecord?.otp);
+    if (!isMatch) {
+      throw new BadRequestError("Invalid OTP")
+    }
+
+    otpRecord.isUsed = true;
+    await otpRecord.save();
+
+    return res.status(200).json({ success: true, message: "OTP verified successfully" });
+  } catch (error) {
+    next(error)
+  }
+};
+
 const resetLawyerPassword = async (req, res, next) => {
   try {
     const { email, password } = req.body || {};
@@ -237,4 +269,5 @@ export {
   resetLawyerPassword,
   logoutLawyer,
   deleteLawyerAccount,
+  verifyForgotOtp
 };

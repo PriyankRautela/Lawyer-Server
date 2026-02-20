@@ -7,6 +7,7 @@ import {
   resetLawyerPassword,
   logoutLawyer,
   deleteLawyerAccount,
+  verifyForgotOtp,
 } from "../../../controllers/Lawyer/auth/auth.controller.js";
 
 import authMiddleware from "../../../middlewares/auth/authLawyer.middleware.js";
@@ -22,6 +23,7 @@ lawyerauthRouter.post("/logout", authMiddleware, logoutLawyer);
 
 
 lawyerauthRouter.post("/forgot-password", forgotLawyerPassword);
+lawyerauthRouter.post("/forgot/verify", verifyForgotOtp);
 lawyerauthRouter.post("/reset-password", resetLawyerPassword);
 
 

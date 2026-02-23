@@ -1,10 +1,10 @@
 import express from "express";
 import { createFirDraft } from "../../controllers/FIR/firDraft.controller.js";
 import { createFirPaymentSession } from "../../controllers/FIR/firPayment.js";
-import { updateFirStatus } from "../../controllers/FIR/firAdmin.controller.js";
+import { getAllFirRequestsAdmin, updateFirStatus } from "../../controllers/FIR/firAdmin.controller.js";
 import { adminSendFirMessage, userSendFirMessage, getFirMessages } from "../../controllers/FIR/firAdmin.controller.js";
 
-import  firUploader  from "../../middlewares/multer/FIR/firUploader.js";
+import { firUploader } from "../../middlewares/multer/FIR/firUploader.js";
 import authUser from "../../middlewares/auth/authUser.middleware.js";
 import authAdmin from "../../middlewares/auth/authAdmin.middleware.js";
 
@@ -46,6 +46,8 @@ firRouter.post(
    ADMIN ROUTES
 =============================== */
 
+//get al fir
+firRouter.get('/get-fir',authAdmin,getAllFirRequestsAdmin)
 // Update FIR Status
 firRouter.put(
   "/:id/status",

@@ -4,10 +4,17 @@ import connectDB from "./config/DB/dbConnect.js";
 import configureExpress from "./config/express/expressConfig.js";
 import { errorHandler } from "./middlewares/errorHandler/errorHandler.middleware.js";
 import router from "./routers/index.js";
+import webRouter from "./routers/FIR/firWebhook.router.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 connectDB();
+app.use(
+  "/api/v1/webhook",
+  express.raw({ type: "application/json" }),
+  webRouter
+);
+
 configureExpress(app);
 app.get("/", (req, res) => {
   res.send("API WORKING");

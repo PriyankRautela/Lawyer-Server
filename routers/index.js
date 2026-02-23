@@ -13,7 +13,6 @@ router.use('/admin',adminIndexRouter);
 router.use('/lawyer',lawyerIndexRouter);
 router.use('/comman',commanIndexRouter);
 router.use('/fir',firRouter);
-router.use('/webhook',webRouter);
 
 
 export default router;

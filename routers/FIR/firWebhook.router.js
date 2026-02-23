@@ -3,10 +3,6 @@ import { stripeWebhook } from "../../controllers/FIR/firWebhook.controller.js";
 
 const webRouter = express.Router();
 
-webRouter.post(
-  "/stripe",
-  express.raw({ type: "application/json" }),
-  stripeWebhook
-);
+webRouter.post("/stripe", stripeWebhook);
 
 export default webRouter;

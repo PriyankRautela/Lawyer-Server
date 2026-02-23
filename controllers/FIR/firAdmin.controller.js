@@ -1,6 +1,60 @@
 import firMessageModel from "../../models/FIR/firMessag.model.js";
 import firRequestModel from "../../models/FIR/firRequest.model.js";
 
+export const getAllFirRequestsAdmin = async (req, res, next) => {
+  try {
+    let {
+      page = 1,
+      limit = 10,
+      status,
+      search,
+      state,
+    } = req.query;
+
+    page = parseInt(page);
+    limit = parseInt(limit);
+
+    const skip = (page - 1) * limit;
+
+    const query = {};
+
+    if (status) query.status = status;
+    if (state) query.state = state;
+
+    if (search) {
+      query.$or = [
+        { firNumber: { $regex: search, $options: "i" } },
+        { complainantName: { $regex: search, $options: "i" } },
+        { policeStation: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const [requests, total] = await Promise.all([
+      firRequestModel
+        .find(query)
+        .populate("userId", "name email")
+        .populate("assignedTo", "name email")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      firRequestModel.countDocuments(query),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      data: requests,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const updateFirStatus = async (req, res, next) => {
   try {

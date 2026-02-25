@@ -5,6 +5,7 @@ import lawyerIndexRouter from './Lawyer/lawyerIndex.js';
 import commanIndexRouter from './Comman/commanIndex.router.js';
 import firRouter from './FIR/fir.router.js';
 import FAQRouter from './UI/FAQ.router.js';
+import termRouter from './Legal/terms&Condition.js';
 
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.use('/lawyer',lawyerIndexRouter);
 router.use('/comman',commanIndexRouter);
 router.use('/fir',firRouter);
 router.use('/Ui',FAQRouter);
+router.use('/terms',termRouter);
 
 
 export default router;

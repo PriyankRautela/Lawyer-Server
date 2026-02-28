@@ -6,6 +6,7 @@ import commanIndexRouter from './Comman/commanIndex.router.js';
 import firRouter from './FIR/fir.router.js';
 import FAQRouter from './UI/FAQ.router.js';
 import termRouter from './Legal/terms&Condition.js';
+import legalRouter from './legalCase/legalCase.router.js'
 
 const router = express.Router();
 
@@ -16,6 +17,7 @@ router.use('/comman',commanIndexRouter);
 router.use('/fir',firRouter);
 router.use('/Ui',FAQRouter);
 router.use('/terms',termRouter);
+router.use('/legal-case',legalRouter)
 
 
 export default router;
